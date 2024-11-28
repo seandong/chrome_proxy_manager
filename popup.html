@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proxy Manager</title>
+  <link rel="stylesheet" href="popup.css?x=1" />
+</head>
+<body>
+  <div class="container">
+    <h2>Proxy Manager</h2>
+    <form id="proxyForm" class="form">
+      <div class="form-group">
+        <label for="proxyType">Proxy Type:</label>
+        <select id="proxyType" class="input">
+          <option value="http">HTTP</option>
+          <option value="socks5">SOCKS5</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="proxyHost">Proxy Host:</label>
+        <input type="text" id="proxyHost" class="input" placeholder="e.g., 127.0.0.1" />
+      </div>
+      <div class="form-group">
+        <label for="proxyPort">Proxy Port:</label>
+        <input type="number" id="proxyPort" class="input" placeholder="e.g., 8080" />
+      </div>
+      <div class="form-group">
+        <label for="proxyUsername">Username:</label>
+        <input type="text" id="proxyUsername" class="input" placeholder="e.g., user" />
+      </div>
+      <div class="form-group">
+        <label for="proxyPassword">Password:</label>
+        <input type="password" id="proxyPassword" class="input" placeholder="e.g., password" />
+      </div>
+      <div class="button-group">
+        <button type="button" id="applyProxy" class="btn">Apply Proxy</button>
+        <button type="button" id="clearProxy" class="btn">Clear Proxy</button>
+      </div>
+    </form>
+    <div id="status" class="status-message"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
