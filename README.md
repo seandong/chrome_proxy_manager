@@ -1,0 +1,3 @@
+# Configure HTTP and SOCKS5 proxies for Google Chrome extension
+
+WIP ...
