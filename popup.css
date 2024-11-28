@@ -1,116 +1,49 @@
-/* 基本样式 */
-* {
-  box-sizing: border-box;
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', sans-serif; /* Modern font similar to Next.js */
-  background-color: #f9fafb;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  font-family: Arial, sans-serif;
+  width: 300px;
+  padding: 20px;
 }
 
 .container {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  width: 100%; /* Ensure full width */
-  max-width: 900px; /* Set max-width to 900px */
-  box-sizing: border-box; /* Ensure padding is included in width */
+  display: flex;
+  flex-direction: column;
 }
 
-/* 标题样式 */
 h2 {
-  text-align: center;
-  font-size: 24px;
+  font-size: 20px;
   margin-bottom: 20px;
-  color: #333;
 }
 
-/* 表单样式 */
 .form-group {
-  margin-bottom: 16px;
-}
-
-label {
-  font-size: 14px;
-  color: #4b5563; /* Dark gray color for labels */
+  margin-bottom: 15px;
 }
 
 .input {
   width: 100%;
-  padding: 10px;
-  margin-top: 6px;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
+  padding: 8px;
+  margin-top: 5px;
   font-size: 14px;
-  color: #333;
-  background-color: #f9fafb;
 }
 
-.input:focus {
-  border-color: #4CAF50;
-  outline: none;
-}
-
-/* 按钮组样式 */
 .button-group {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 }
 
 .btn {
-  width: 48%;
-  padding: 12px;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 10px 15px;
   background-color: #4CAF50;
   color: white;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
 .btn:hover {
   background-color: #45a049;
 }
 
-.btn:active {
-  background-color: #388e3c;
-}
-
-/* 状态信息 */
 .status-message {
   margin-top: 20px;
-  text-align: center;
   font-size: 14px;
-  color: #d1d5db;
-}
-
-.status-message.success {
-  color: #10b981; /* Green for success */
-}
-
-.status-message.error {
-  color: #ef4444; /* Red for error */
-}
-
-/* 响应式设计 */
-@media (max-width: 480px) {
-  .container {
-    padding: 20px;
-  }
-  h2 {
-    font-size: 20px;
-  }
-  .btn {
-    font-size: 12px;
-  }
+  color: #333;
 }

@@ -1,45 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Proxy Manager</title>
-  <link rel="stylesheet" href="popup.css?x=1" />
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f1f1f1; /* Light gray background */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 300px;
+      height: auto;
+    }
+
+    h3 {
+      color: #333; /* Dark gray for text */
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333; /* Dark gray text for labels */
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      font-size: 14px;
+      border: 1px solid #ccc; /* Light gray border */
+      border-radius: 6px;
+      margin-bottom: 16px;
+      box-sizing: border-box;
+      background-color: #fff; /* White background for inputs */
+      color: #333; /* Dark gray text for inputs */
+    }
+
+    input[type="password"] {
+      -webkit-text-security: circle;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #333; /* Darker border color when focused */
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      background-color: #333; /* Dark gray background for the button */
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #555; /* Slightly lighter gray for hover effect */
+    }
+
+    .input-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-container input,
+    .input-container select {
+      margin-bottom: 12px;
+    }
+
+    .input-container input[type="password"] {
+      font-family: "Courier New", monospace;
+    }
+
+    .input-container input[type="number"] {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* Tooltip for additional instructions */
+    .tooltip {
+      font-size: 12px;
+      color: #777; /* Light gray color for tooltips */
+      margin-top: -10px;
+      margin-bottom: 16px;
+    }
+
+    .tooltip span {
+      font-weight: bold;
+    }
+
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Proxy Manager</h2>
-    <form id="proxyForm" class="form">
-      <div class="form-group">
-        <label for="proxyType">Proxy Type:</label>
-        <select id="proxyType" class="input">
-          <option value="http">HTTP</option>
-          <option value="socks5">SOCKS5</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="proxyHost">Proxy Host:</label>
-        <input type="text" id="proxyHost" class="input" placeholder="e.g., 127.0.0.1" />
-      </div>
-      <div class="form-group">
-        <label for="proxyPort">Proxy Port:</label>
-        <input type="number" id="proxyPort" class="input" placeholder="e.g., 8080" />
-      </div>
-      <div class="form-group">
-        <label for="proxyUsername">Username:</label>
-        <input type="text" id="proxyUsername" class="input" placeholder="e.g., user" />
-      </div>
-      <div class="form-group">
-        <label for="proxyPassword">Password:</label>
-        <input type="password" id="proxyPassword" class="input" placeholder="e.g., password" />
-      </div>
-      <div class="button-group">
-        <button type="button" id="applyProxy" class="btn">Apply Proxy</button>
-        <button type="button" id="clearProxy" class="btn">Clear Proxy</button>
-      </div>
-    </form>
-    <div id="status" class="status-message"></div>
+  <h3>Proxy Settings</h3>
+  <div class="input-container">
+    <label for="proxyHost">Host:</label>
+    <input type="text" id="proxyHost" placeholder="127.0.0.1" />
+
+    <label for="proxyPort">Port:</label>
+    <input type="number" id="proxyPort" placeholder="8080" />
+
+    <label for="proxyType">Type:</label>
+    <select id="proxyType">
+      <option value="http">HTTP</option>
+      <option value="https">HTTPS</option>
+      <option value="socks5">SOCKS5</option>
+    </select>
+
+    <label for="proxyUsername">Username (optional):</label>
+    <input type="text" id="proxyUsername" placeholder="" />
+
+    <label for="proxyPassword">Password (optional):</label>
+    <input type="password" id="proxyPassword" placeholder="" />
+
+    <button id="saveButton">Save</button>
   </div>
-  <script src="popup.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Get current proxy settings
+      chrome.storage.local.get(
+        ["proxyHost", "proxyPort", "proxyType", "proxyUsername", "proxyPassword"],
+        function (items) {
+          document.getElementById("proxyHost").value = items.proxyHost || "";
+          document.getElementById("proxyPort").value = items.proxyPort || "";
+          document.getElementById("proxyType").value = items.proxyType || "http";
+          document.getElementById("proxyUsername").value = items.proxyUsername || "";
+          document.getElementById("proxyPassword").value = items.proxyPassword || "";
+        }
+      );
+
+      // Save proxy settings
+      document.getElementById("saveButton").addEventListener("click", function () {
+        const proxyHost = document.getElementById("proxyHost").value;
+        const proxyPort = document.getElementById("proxyPort").value;
+        const proxyType = document.getElementById("proxyType").value;
+        const proxyUsername = document.getElementById("proxyUsername").value;
+        const proxyPassword = document.getElementById("proxyPassword").value;
+
+        chrome.storage.local.set(
+          { proxyHost, proxyPort, proxyType, proxyUsername, proxyPassword },
+          function () {
+            console.log("Proxy settings saved!");
+          }
+        );
+      });
+    });
+  </script>
 </body>
 </html>

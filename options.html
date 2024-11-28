@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Proxy Settings</title>
+</head>
+<body>
+  <h1>Configure Proxy</h1>
+  <form id="proxyForm">
+    <label for="proxyHost">Proxy Host:</label>
+    <input type="text" id="proxyHost" placeholder="e.g., 127.0.0.1"/><br/><br/>
+
+    <label for="proxyPort">Proxy Port:</label>
+    <input type="number" id="proxyPort" placeholder="e.g., 8080"/><br/><br/>
+
+    <label for="proxyType">Proxy Type:</label>
+    <select id="proxyType">
+      <option value="http">HTTP</option>
+      <option value="https">HTTPS</option>
+      <option value="socks5">SOCKS5</option>
+    </select><br/><br/>
+
+    <label for="proxyUsername">Username (optional):</label>
+    <input type="text" id="proxyUsername" placeholder="Username"/><br/><br/>
+
+    <label for="proxyPassword">Password (optional):</label>
+    <input type="password" id="proxyPassword" placeholder="Password"/><br/><br/>
+
+    <button type="submit">Save Proxy</button>
+  </form>
+
+  <script>
+    document.getElementById("proxyForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const proxyHost = document.getElementById("proxyHost").value;
+      const proxyPort = document.getElementById("proxyPort").value;
+      const proxyType = document.getElementById("proxyType").value;
+      const proxyUsername = document.getElementById("proxyUsername").value;
+      const proxyPassword = document.getElementById("proxyPassword").value;
+
+      chrome.storage.local.set({
+        proxyHost,
+        proxyPort,
+        proxyType,
+        proxyUsername,
+        proxyPassword
+      }, function() {
+        alert("Proxy settings saved!");
+      });
+    });
+  </script>
+</body>
+</html>

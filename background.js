@@ -1,60 +1,62 @@
-let proxyCredentials = null;
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Proxy Manager Extension Installed");
 
-// Base64 编码用户名和密码
-const encodeCredentials = (username, password) => {
-  return btoa(`${username}:${password}`);
-};
-
-// 监听消息，设置代理或清除代理
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.type === "set-proxy") {
-    proxyCredentials = {
-      username: message.proxyUsername,
-      password: message.proxyPassword,
-    };
-
-    const config = {
-      mode: "fixed_servers",
-      rules: {
-        singleProxy: {
-          scheme: message.proxyType,
-          host: message.proxyHost,
-          port: parseInt(message.proxyPort, 10),
-        },
-      },
-    };
-
-    chrome.proxy.settings.set({ value: config, scope: "regular" }, () => {
-      sendResponse({ status: "success" });
-    });
-
-    return true; // 异步响应
-  }
-
-  if (message.type === "clear-proxy") {
-    chrome.proxy.settings.clear({ scope: "regular" }, () => {
-      proxyCredentials = null; // 清除缓存的认证信息
-      sendResponse({ status: "success" });
-    });
-
-    return true;
-  }
+  // 初始化代理设置
+  chrome.storage.local.get(
+    ["proxyHost", "proxyPort", "proxyType", "proxyUsername", "proxyPassword"],
+    (items) => {
+      // 如果没有设置代理配置，使用默认值
+      if (!items.proxyHost || !items.proxyPort) {
+        chrome.storage.local.set({
+          proxyHost: "127.0.0.1",
+          proxyPort: 8080,
+          proxyType: "http",
+          proxyUsername: null,
+          proxyPassword: null
+        });
+      } else {
+        setProxy(items);
+      }
+    }
+  );
 });
 
-// 拦截代理请求并注入认证信息
-chrome.webRequest.onAuthRequired.addListener(
-  (details, callback) => {
-    if (proxyCredentials) {
-      callback({
-        authCredentials: {
-          username: proxyCredentials.username,
-          password: proxyCredentials.password,
-        },
-      });
-    } else {
-      callback(); // 无认证信息时不处理
+// 设置代理
+function setProxy(items) {
+  const { proxyHost, proxyPort, proxyType, proxyUsername, proxyPassword } = items;
+
+  let proxyConfig = {
+    mode: "fixed_servers",
+    rules: {
+      singleProxy: {
+        scheme: proxyType,
+        host: proxyHost,
+        port: parseInt(proxyPort)
+      },
+      bypassList: []
     }
-  },
-  { urls: ["<all_urls>"] },
-  ["blocking"]
-);
+  };
+
+  if (proxyUsername && proxyPassword) {
+    // 如果有用户名和密码，使用认证
+    proxyConfig.rules.singleProxy.username = proxyUsername;
+    proxyConfig.rules.singleProxy.password = proxyPassword;
+  }
+
+  // 使用 chrome.proxy API 设置代理
+  chrome.proxy.settings.set({ value: proxyConfig, scope: "regular" }, function () {
+    console.log("Proxy is set to:", proxyConfig);
+  });
+}
+
+// 监听代理设置变化
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === "local" && changes.proxyHost || changes.proxyPort || changes.proxyType || changes.proxyUsername || changes.proxyPassword) {
+    chrome.storage.local.get(
+      ["proxyHost", "proxyPort", "proxyType", "proxyUsername", "proxyPassword"],
+      (items) => {
+        setProxy(items);
+      }
+    );
+  }
+});
